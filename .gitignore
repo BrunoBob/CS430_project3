@@ -31,3 +31,9 @@
 # Debug files
 *.dSYM/
 *.su
+
+*.cc
+/json/*
+raycaster
+temp
+alltest
