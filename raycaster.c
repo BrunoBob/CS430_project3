@@ -91,6 +91,21 @@ void createScene(char* ppm, unsigned char* data, int width, int height){
   }
   fclose(outputFile);
 }
+double fAng(double* V0, double* Vl, double angleMax, double a0){
+  double dot = dotProduct(V0, Vl);
+  if(acos(dot) > angleMax){
+    return 0;
+  }
+    return pow(dot, a0);
+}
+
+double fRad(double dist, double a0, double a1, double a2){
+  if(dist == INFINITY){
+    return 1;
+  }
+  return 1/(a2*sqr(dist + a1*dist + a0));
+}
+
 
 int main(int argc, char *argv[]){
   if(argc < 5){

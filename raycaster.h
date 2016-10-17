@@ -47,6 +47,8 @@ double planeIntersection(double* Ro, double* Rd, double* position, double* norma
 
 double sphereIntersection(double* Ro, double* Rd, double* position, double radius);
 
+double fAng(double* V0, double* Vl, double angleMax, double a0);
+
 static inline double* getVector(double x, double y, double z){
   double* v = malloc(3*sizeof(double));
   v[0] = x;
