@@ -32,7 +32,14 @@ typedef struct light{
   struct light* next;
 } *lightList;
 
+typedef struct component{
+  objectList objects;
+  lightList lights;
+} *components;
+
 void printObjects(objectList list);
+
+void printLights(lightList list);
 
 void createScene(char* ppm, unsigned char* data, int width, int height);
 

@@ -27,6 +27,6 @@ double readNumber(FILE* json);
 
 double* ReadVector(FILE* json);
 
-objectList parseFile(char* filename, objectList list, double* width, double* height);
+components parseFile(char* filename, double* width, double* height);
 
 #endif

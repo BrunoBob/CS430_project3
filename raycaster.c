@@ -23,6 +23,23 @@ void printObjects(objectList list){
   }
 }
 
+//Print all lights detected in json file
+void printLights(lightList list){
+  while (list != NULL) {
+    if(list->color != NULL){
+      printf("\n\n Light : \nLights color : %lf  %lf  %lf\n", list->color[0], list->color[1], list->color[2]);
+      printf("Position : %lf  %lf  %lf\n", list->position[0], list->position[1], list->position[2]);
+      printf("Direction : %lf  %lf  %lf\n", list->direction[0], list->direction[1], list->direction[2]);
+      printf("Radial-a0 : %lf\n", list->radA0);
+      printf("Radial-a0 : %lf\n", list->radA1);
+      printf("Radial-a0 : %lf\n", list->radA2);
+      printf("Angular-a0 : %lf\n", list->angA0);
+      printf("\n");
+    }
+    list = list->next;
+  }
+}
+
 
 //Compute if interserction with a plane
 double planeIntersection(double* Ro, double* Rd, double* position, double* normal){
@@ -89,8 +106,10 @@ int main(int argc, char *argv[]){
 
   double camWidth, camHeight;
 
-  objectList list = NULL;
-  list = parseFile(argv[3], list, &camWidth, &camHeight);
+  components comp = NULL;
+  comp = parseFile(argv[3], &camWidth, &camHeight);
+  objectList list = comp->objects;
+  lightList lights = comp->lights;
 
   double pixWidth = camWidth / width;
   double pixHeight = camHeight / height;
@@ -98,7 +117,7 @@ int main(int argc, char *argv[]){
   printf("\nScene : width = %d\theight = %d\n", width, height);
   printf("\nCamera : width = %lf\theight = %lf\n\n", camWidth, camHeight);
   printObjects(list);
-
+  printLights(lights);
   unsigned char* data = (unsigned char*)malloc(width * height * 3 * sizeof(unsigned char));
 
   int x,y;
@@ -120,14 +139,14 @@ int main(int argc, char *argv[]){
 
         switch (tempList->kind) {
           case 0:
-            t = sphereIntersection(Ro, Rd, tempList->position, tempList->sphere.radius);
-            break;
+          t = sphereIntersection(Ro, Rd, tempList->position, tempList->sphere.radius);
+          break;
           case 1:
-            t = planeIntersection(Ro, Rd, tempList->position, tempList->plane.normal);
-            break;
+          t = planeIntersection(Ro, Rd, tempList->position, tempList->plane.normal);
+          break;
           default:
-            fprintf(stderr, "Error: Object of kind unknow (How is it even possible ?)");
-            exit(ERROR_RAYCAST);
+          fprintf(stderr, "Error: Object of kind unknow (How is it even possible ?)");
+          exit(ERROR_RAYCAST);
         }
 
         if(t > 0 && t < bestT){

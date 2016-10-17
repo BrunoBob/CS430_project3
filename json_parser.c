@@ -102,7 +102,7 @@ double* ReadVector(FILE* json) {
   return v;
 }
 
-objectList parseFile(char* filename, objectList list, double* width, double* height) {
+components parseFile(char* filename, double* width, double* height) {
 
   #ifdef DEBUG
     printf("Starting reading file %s\n", filename);
@@ -112,8 +112,11 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
   int objectNumber = 0;
   FILE* json = fopen(filename, "r");
 
+  components comp = (components)malloc(sizeof(*comp));
   objectList tempList = (objectList)malloc(sizeof(*tempList));
-  list = tempList;
+  lightList tempLights = (lightList)malloc(sizeof(*tempLights));
+  comp->objects = tempList;
+  comp->lights = tempLights;
 
   if (json == NULL) {
     fprintf(stderr, "Error: Could not open file \"%s\"\n", filename);
@@ -164,7 +167,7 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
         tempList->kind = 1 ;
       }
       else if(strcmp(value, "light") == 0){
-        tempList->kind = -1 ;
+        tempList->kind = -2 ;
       }
       else {
         fprintf(stderr, "Error: Unknown type, \"%s\", on line number %d.\n", value, line);
@@ -202,16 +205,16 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
               *height = value;
             }
             else if(strcmp(key, "radial-a0") == 0){
-
+              tempLights->radA0 = value;
             }
             else if(strcmp(key, "radial-a1") == 0){
-
+              tempLights->radA1 = value;
             }
             else if(strcmp(key, "radial-a2") == 0){
-
+              tempLights->radA2 = value;
             }
             else{
-
+              tempLights->angA0 = value;
             }
           }
           else if ((strcmp(key, "color") == 0) || (strcmp(key, "position") == 0) || (strcmp(key, "normal") == 0) || (strcmp(key, "diffuse_color") == 0)
@@ -224,16 +227,21 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
               tempList->specularColor = value;
             }
             else if(strcmp(key, "position") == 0){
-              tempList->position = value;
+              if(tempList->kind >= 0){
+                tempList->position = value;
+              }
+              else{
+                tempLights->position = value;
+              }
             }
             else if(strcmp(key, "normal") == 0){
               tempList->plane.normal = value;
             }
             else if(strcmp(key, "color") == 0){
-
+              tempLights->color = value;
             }
             else{
-              
+              tempLights->direction = value;
             }
           }
           else {
@@ -251,9 +259,13 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
       skipSpace(json);
       c = readChar(json);
       if (c == ',') {
-        if(tempList->kind != -1){
+        if(tempList->kind >= 0){
           tempList->next = (objectList)malloc(sizeof(*tempList));
           tempList = tempList->next;
+        }
+        else if(tempList->kind == -2){
+          tempLights->next = (lightList)malloc(sizeof(*tempLights));
+          tempLights = tempLights->next;
         }
         skipSpace(json);
       }
@@ -262,7 +274,7 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
         #ifdef DEBUG
           printf("\nEnd of reading\n");
         #endif
-        return list;
+        return comp;
       }
       else {
         fprintf(stderr, "Error: Expecting ',' or ']' on line %d.\n", line);
