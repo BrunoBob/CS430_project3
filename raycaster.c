@@ -6,13 +6,15 @@ void printObjects(objectList list){
   while(list != NULL){
     if(list->kind == 0){
       printf("Object of kind : sphere\n");
-      printf("Color : %lf  %lf  %lf\n", list->color[0], list->color[1], list->color[2]);
+      printf("Diffuse color : %lf  %lf  %lf\n", list->diffuseColor[0], list->diffuseColor[1], list->diffuseColor[2]);
+      printf("Specular color : %lf  %lf  %lf\n", list->specularColor[0], list->specularColor[1], list->specularColor[2]);
       printf("Position : %lf  %lf  %lf\n", list->position[0], list->position[1], list->position[2]);
       printf("Radius : %lf\n", list->sphere.radius);
     }
     else{
       printf("Object of kind : plane\n");
-      printf("Color : %lf  %lf  %lf\n", list->color[0], list->color[1], list->color[2]);
+      printf("Diffuse color : %lf  %lf  %lf\n", list->diffuseColor[0], list->diffuseColor[1], list->diffuseColor[2]);
+      printf("Specular color : %lf  %lf  %lf\n", list->specularColor[0], list->specularColor[1], list->specularColor[2]);
       printf("Position : %lf  %lf  %lf\n", list->position[0], list->position[1], list->position[2]);
       printf("Normal : %lf  %lf  %lf\n", list->plane.normal[0], list->plane.normal[1], list->plane.normal[2]);
     }
@@ -130,7 +132,7 @@ int main(int argc, char *argv[]){
 
         if(t > 0 && t < bestT){
           bestT = t;
-          pixel = tempList->color;
+          pixel = tempList->diffuseColor;
         }
         tempList = tempList->next;
       }

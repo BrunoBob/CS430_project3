@@ -10,7 +10,8 @@
 
 typedef struct object{
   int kind; // 0 = sphere, 1 = plane
-  double* color;
+  double* diffuseColor;
+  double* specularColor;
   double* position;
   union {
     struct {
@@ -22,6 +23,14 @@ typedef struct object{
   };
   struct object* next;
 } *objectList;
+
+typedef struct light{
+  double* color;
+  double* position;
+  double* direction;
+  double radA0, radA1, radA2, angA0;
+  struct light* next;
+} *lightList;
 
 void printObjects(objectList list);
 

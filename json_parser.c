@@ -163,6 +163,9 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
       else if (strcmp(value, "plane") == 0) {
         tempList->kind = 1 ;
       }
+      else if(strcmp(value, "light") == 0){
+        tempList->kind = -1 ;
+      }
       else {
         fprintf(stderr, "Error: Unknown type, \"%s\", on line number %d.\n", value, line);
         exit(ERROR_PARSER);
@@ -186,7 +189,8 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
           expectChar(json, ':');
           skipSpace(json);
 
-          if ((strcmp(key, "width") == 0) || (strcmp(key, "height") == 0) || (strcmp(key, "radius") == 0)) {
+          if ((strcmp(key, "width") == 0) || (strcmp(key, "height") == 0) || (strcmp(key, "radius") == 0) || (strcmp(key, "radial-a0") == 0)
+          || (strcmp(key, "radial-a1") == 0) || (strcmp(key, "radial-a2") == 0) || (strcmp(key, "angular-a0") == 0)) {
             double value = readNumber(json);
             if(strcmp(key, "radius") == 0){
               tempList->sphere.radius = value;
@@ -194,20 +198,42 @@ objectList parseFile(char* filename, objectList list, double* width, double* hei
             else if(strcmp(key, "width") == 0){
               *width = value;
             }
-            else{
+            else if(strcmp(key, "height") == 0){
               *height = value;
             }
+            else if(strcmp(key, "radial-a0") == 0){
+
+            }
+            else if(strcmp(key, "radial-a1") == 0){
+
+            }
+            else if(strcmp(key, "radial-a2") == 0){
+
+            }
+            else{
+
+            }
           }
-          else if ((strcmp(key, "color") == 0) || (strcmp(key, "position") == 0) || (strcmp(key, "normal") == 0)) {
+          else if ((strcmp(key, "color") == 0) || (strcmp(key, "position") == 0) || (strcmp(key, "normal") == 0) || (strcmp(key, "diffuse_color") == 0)
+             || (strcmp(key, "specular_color") == 0) || (strcmp(key, "direction") == 0)) {
             double* value = ReadVector(json);
-            if(strcmp(key, "color") == 0){
-              tempList->color = value;
+            if(strcmp(key, "diffuse_color") == 0){
+              tempList->diffuseColor = value;
+            }
+            else if(strcmp(key, "specular_color") == 0){
+              tempList->specularColor = value;
             }
             else if(strcmp(key, "position") == 0){
               tempList->position = value;
             }
-            else{
+            else if(strcmp(key, "normal") == 0){
               tempList->plane.normal = value;
+            }
+            else if(strcmp(key, "color") == 0){
+
+            }
+            else{
+              
             }
           }
           else {
