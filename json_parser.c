@@ -110,7 +110,6 @@ objectList createObject(){
   object->position = getVector(0,0,0);
   object->plane.normal = getVector(0,0,0);
   object->next = NULL;
-  printf("New object\n" );
   return object;
 }
 
@@ -120,7 +119,6 @@ lightList createLight(){
   light->position = getVector(0,0,0);
   light->direction = getVector(0,0,0);
   light->next = NULL;
-  printf("New light\n" );
   return light;
 }
 
@@ -184,7 +182,6 @@ components parseFile(char* filename, double* width, double* height) {
       char* value = readString(json);
 
       if (strcmp(value, "camera") == 0) {
-       printf("camera\n");
         currentKind = -1 ;
       }
       else if (strcmp(value, "sphere") == 0) {
@@ -221,8 +218,6 @@ components parseFile(char* filename, double* width, double* height) {
         exit(ERROR_PARSER);
       }
 
-        printf("kind = %d\n", currentKind);
-
       skipSpace(json);
 
       //Read all fields
@@ -248,11 +243,9 @@ components parseFile(char* filename, double* width, double* height) {
               tempList->sphere.radius = value;
             }
             else if(strcmp(key, "width") == 0){
-             printf("width\n" );
               *width = value;
             }
             else if(strcmp(key, "height") == 0){
-             printf("height\n" );
               *height = value;
             }
             else if(strcmp(key, "radial-a0") == 0){
@@ -310,7 +303,6 @@ components parseFile(char* filename, double* width, double* height) {
       c = readChar(json);
       if (c == ',') {
         if(currentKind >= 0){
-          printf("next\n");
           previousObject = tempList;
           tempList = tempList->next;
         }
