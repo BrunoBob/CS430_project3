@@ -1,3 +1,5 @@
+//Theta =0 > not spotlight
+
 
 Object** object;
 

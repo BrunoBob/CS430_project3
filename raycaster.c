@@ -26,16 +26,14 @@ void printObjects(objectList list){
 //Print all lights detected in json file
 void printLights(lightList list){
   while (list != NULL) {
-    if(list->color != NULL){
-      printf("\n\n Light : \nLights color : %lf  %lf  %lf\n", list->color[0], list->color[1], list->color[2]);
-      printf("Position : %lf  %lf  %lf\n", list->position[0], list->position[1], list->position[2]);
-      printf("Direction : %lf  %lf  %lf\n", list->direction[0], list->direction[1], list->direction[2]);
-      printf("Radial-a0 : %lf\n", list->radA0);
-      printf("Radial-a0 : %lf\n", list->radA1);
-      printf("Radial-a0 : %lf\n", list->radA2);
-      printf("Angular-a0 : %lf\n", list->angA0);
-      printf("\n");
-    }
+    printf("\n\n Light : \nLights color : %lf  %lf  %lf\n", list->color[0], list->color[1], list->color[2]);
+    printf("Position : %lf  %lf  %lf\n", list->position[0], list->position[1], list->position[2]);
+    printf("Direction : %lf  %lf  %lf\n", list->direction[0], list->direction[1], list->direction[2]);
+    printf("Radial-a0 : %lf\n", list->radA0);
+    printf("Radial-a0 : %lf\n", list->radA1);
+    printf("Radial-a0 : %lf\n", list->radA2);
+    printf("Angular-a0 : %lf\n", list->angA0);
+    printf("\n");
     list = list->next;
   }
 }
@@ -96,7 +94,7 @@ double fAng(double* V0, double* Vl, double angleMax, double a0){
   if(acos(dot) > angleMax){
     return 0;
   }
-    return pow(dot, a0);
+  return pow(dot, a0);
 }
 
 double fRad(double dist, double a0, double a1, double a2){

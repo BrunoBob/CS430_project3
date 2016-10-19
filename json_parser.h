@@ -29,4 +29,8 @@ double* ReadVector(FILE* json);
 
 components parseFile(char* filename, double* width, double* height);
 
+objectList createObject();
+
+lightList createLight();
+
 #endif

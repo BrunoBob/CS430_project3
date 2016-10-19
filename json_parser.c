@@ -102,6 +102,28 @@ double* ReadVector(FILE* json) {
   return v;
 }
 
+//Malloc an object an set all vector to 0
+objectList createObject(){
+  objectList object = (objectList)malloc(sizeof(*object));
+  object->diffuseColor = getVector(0,0,0);
+  object->specularColor = getVector(0,0,0);
+  object->position = getVector(0,0,0);
+  object->plane.normal = getVector(0,0,0);
+  object->next = NULL;
+  printf("New object\n" );
+  return object;
+}
+
+lightList createLight(){
+  lightList light = (lightList)malloc(sizeof(*light));
+  light->color = getVector(0,0,0);
+  light->position = getVector(0,0,0);
+  light->direction = getVector(0,0,0);
+  light->next = NULL;
+  printf("New light\n" );
+  return light;
+}
+
 components parseFile(char* filename, double* width, double* height) {
 
   #ifdef DEBUG
@@ -112,9 +134,13 @@ components parseFile(char* filename, double* width, double* height) {
   int objectNumber = 0;
   FILE* json = fopen(filename, "r");
 
+  int currentKind;
+
   components comp = (components)malloc(sizeof(*comp));
-  objectList tempList = (objectList)malloc(sizeof(*tempList));
-  lightList tempLights = (lightList)malloc(sizeof(*tempLights));
+  objectList tempList = createObject();
+  lightList tempLights = createLight();
+  objectList previousObject = NULL;
+  lightList previousLight = NULL;
   comp->objects = tempList;
   comp->lights = tempLights;
 
@@ -158,21 +184,44 @@ components parseFile(char* filename, double* width, double* height) {
       char* value = readString(json);
 
       if (strcmp(value, "camera") == 0) {
-        tempList->kind = -1 ;
+       printf("camera\n");
+        currentKind = -1 ;
       }
       else if (strcmp(value, "sphere") == 0) {
-        tempList->kind = 0 ;
+        currentKind = 0 ;
+        if(tempList == NULL){
+          tempList = createObject();
+          tempList->kind = 0;
+        }
+        if(previousObject != NULL){
+          previousObject->next = tempList;
+        }
       }
       else if (strcmp(value, "plane") == 0) {
-        tempList->kind = 1 ;
+        currentKind = 1 ;
+        if(tempList == NULL){
+          tempList = createObject();
+          tempList->kind = 1;
+        }
+        if(previousObject != NULL){
+          previousObject->next = tempList;
+        }
       }
       else if(strcmp(value, "light") == 0){
-        tempList->kind = -2 ;
+        currentKind = -2 ;
+        if(tempLights == NULL){
+          tempLights = createLight();
+        }
+        if(previousLight != NULL){
+          previousLight->next = tempLights;
+        }
       }
       else {
         fprintf(stderr, "Error: Unknown type, \"%s\", on line number %d.\n", value, line);
         exit(ERROR_PARSER);
       }
+
+        printf("kind = %d\n", currentKind);
 
       skipSpace(json);
 
@@ -199,9 +248,11 @@ components parseFile(char* filename, double* width, double* height) {
               tempList->sphere.radius = value;
             }
             else if(strcmp(key, "width") == 0){
+             printf("width\n" );
               *width = value;
             }
             else if(strcmp(key, "height") == 0){
+             printf("height\n" );
               *height = value;
             }
             else if(strcmp(key, "radial-a0") == 0){
@@ -227,7 +278,7 @@ components parseFile(char* filename, double* width, double* height) {
               tempList->specularColor = value;
             }
             else if(strcmp(key, "position") == 0){
-              if(tempList->kind >= 0){
+              if(currentKind >= 0){
                 tempList->position = value;
               }
               else{
@@ -255,16 +306,16 @@ components parseFile(char* filename, double* width, double* height) {
           exit(ERROR_PARSER);
         }
       }
-
       skipSpace(json);
       c = readChar(json);
       if (c == ',') {
-        if(tempList->kind >= 0){
-          tempList->next = (objectList)malloc(sizeof(*tempList));
+        if(currentKind >= 0){
+          printf("next\n");
+          previousObject = tempList;
           tempList = tempList->next;
         }
-        else if(tempList->kind == -2){
-          tempLights->next = (lightList)malloc(sizeof(*tempLights));
+        else if(currentKind == -2){
+          previousLight = tempLights;
           tempLights = tempLights->next;
         }
         skipSpace(json);
