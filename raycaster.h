@@ -47,7 +47,13 @@ double planeIntersection(double* Ro, double* Rd, double* position, double* norma
 
 double sphereIntersection(double* Ro, double* Rd, double* position, double radius);
 
-double fAng(double* V0, double* Vl, double angleMax, double a0);
+double fAng(double* Vo, double* Vl, double angleMax, double a0);
+
+double fRad(double* posObject, double* posLight, double a0, double a1, double a2);
+
+double* diffuse(double* objDiffuse, double* lightColor, double* N, double* L);
+
+double* specular(double* objSpecular, double* lightColor, double* R, double* V,  double* N, double* L, double shininess);
 
 static inline double* getVector(double x, double y, double z){
   double* v = malloc(3*sizeof(double));
@@ -59,6 +65,20 @@ static inline double* getVector(double x, double y, double z){
 
 static inline double* subVector(double* a, double* b){
   return getVector(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+}
+
+static inline double* multVector(double* a, double* b){
+  a[0] = a[0] * b[0];
+  a[1] = a[1] * b[1];
+  a[2] = a[2] * b[2];
+  return a;
+}
+
+static inline double* scaleVector(double* a, double b){
+  a[0] = a[0] * b;
+  a[1] = a[1] * b;
+  a[2] = a[2] * b;
+  return a;
 }
 
 static inline double dotProduct(double* a, double* b){
@@ -74,6 +94,10 @@ static inline void normalize(double* v) {
   v[0] /= len;
   v[1] /= len;
   v[2] /= len;
+}
+
+static inline double radToDeg(double angle){
+  return angle * 57.2958;
 }
 
 

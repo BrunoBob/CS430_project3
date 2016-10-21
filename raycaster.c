@@ -99,21 +99,46 @@ void createScene(char* ppm, unsigned char* data, int width, int height){
   }
   fclose(outputFile);
 }
-double fAng(double* V0, double* Vl, double angleMax, double a0){
-  double dot = dotProduct(V0, Vl);
-  if(acos(dot) > angleMax){
+
+//Compute angular attenuation of a light
+double fAng(double* Vo, double* Vl, double angleMax, double a0){
+  if(angleMax == 0){
+    return 1; //Not spotlight
+  }
+  double dot = dotProduct(Vo, Vl);
+  if(radToDeg(acos(dot)) > angleMax){
     return 0;
   }
   return pow(dot, a0);
 }
 
-double fRad(double dist, double a0, double a1, double a2){
+//Compute radial attenuation of a light
+double fRad(double* posObject, double* posLight, double a0, double a1, double a2){
+  double* VL = subVector(posObject,posLight);
+  double dist = sqrt(sqr(VL[0]) + sqr(VL[1]) + sqr(VL[2]));
   if(dist == INFINITY){
     return 1;
   }
   return 1/(a2*sqr(dist + a1*dist + a0));
 }
 
+//Compute the incident light
+double* diffuse(double* objDiffuse, double* lightColor, double* N, double* L){
+  double NL = dotProduct(N, L);
+  if(NL > 0){
+    return scaleVector(multVector(objDiffuse, lightColor), NL);
+  }
+  return 0;
+}
+
+double* specular(double* objSpecular, double* lightColor, double* R, double* V,  double* N, double* L, double shininess){
+  double VR = dotProduct(V, R);
+  double NL = dotProduct(N, L);
+  if(NL > 0 && VR > 0){
+    return scaleVector(multVector(objSpecular, lightColor), pow(VR, shininess));
+  }
+  return 0;
+}
 
 int main(int argc, char *argv[]){
   if(argc < 5){
