@@ -237,7 +237,7 @@ components parseFile(char* filename, double* width, double* height) {
           skipSpace(json);
 
           if ((strcmp(key, "width") == 0) || (strcmp(key, "height") == 0) || (strcmp(key, "radius") == 0) || (strcmp(key, "radial-a0") == 0)
-          || (strcmp(key, "radial-a1") == 0) || (strcmp(key, "radial-a2") == 0) || (strcmp(key, "angular-a0") == 0)) {
+          || (strcmp(key, "radial-a1") == 0) || (strcmp(key, "radial-a2") == 0) || (strcmp(key, "angular-a0") == 0) || (strcmp(key, "theta") == 0)) {
             double value = readNumber(json);
             if(strcmp(key, "radius") == 0){
               tempList->sphere.radius = value;
@@ -257,8 +257,11 @@ components parseFile(char* filename, double* width, double* height) {
             else if(strcmp(key, "radial-a2") == 0){
               tempLights->radA2 = value;
             }
-            else{
+            else if(strcmp(key, "angular-a0") == 0){
               tempLights->angA0 = value;
+            }
+            else{
+              tempLights->theta = value;
             }
           }
           else if ((strcmp(key, "color") == 0) || (strcmp(key, "position") == 0) || (strcmp(key, "normal") == 0) || (strcmp(key, "diffuse_color") == 0)

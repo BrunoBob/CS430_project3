@@ -28,7 +28,7 @@ typedef struct light{
   double* color;
   double* position;
   double* direction;
-  double radA0, radA1, radA2, angA0;
+  double radA0, radA1, radA2, angA0, theta;
   struct light* next;
 } *lightList;
 
