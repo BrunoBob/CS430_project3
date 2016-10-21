@@ -64,7 +64,17 @@ static inline double* getVector(double x, double y, double z){
 }
 
 static inline double* subVector(double* a, double* b){
-  return getVector(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+  a[0] = a[0] - b[0];
+  a[1] = a[1] - b[1];
+  a[2] = a[2] - b[2];
+  return a;
+}
+
+static inline double* addVector(double* a, double* b){
+  a[0] = a[0] + b[0];
+  a[1] = a[1] + b[1];
+  a[2] = a[2] + b[2];
+  return a;
 }
 
 static inline double* multVector(double* a, double* b){
@@ -98,6 +108,12 @@ static inline void normalize(double* v) {
 
 static inline double radToDeg(double angle){
   return angle * 57.2958;
+}
+
+static inline double clamp(double value){
+  if(value > 1) return 1;
+  if(value < 0) return 0;
+  return value;
 }
 
 
