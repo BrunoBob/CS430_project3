@@ -124,18 +124,12 @@ double fRad(double dist, double a0, double a1, double a2){
 double* diffuse(double* objDiffuse, double* lightColor, double* N, double* L){
   double NL = dotProduct(N, L);
   if(NL > 0){
-    //printf("%lf  %lf %lf\n", objDiffuse[0], objDiffuse[1], objDiffuse[2]);
-    //printf("%lf  %lf %lf\n", lightColor[0], lightColor[1], lightColor[2]);
-    //double* test = (multVector(objDiffuse, lightColor));
-    //printf("%lf  %lf %lf\n", test[0], test[1], test[2]);
-    //printf("%lf\n", NL);
-    //double* test2 = scaleVector(multVector(objDiffuse, lightColor), NL);
-    //printf("%lf  %lf %lf\n\n", test2[0], test2[1], test2[2]);
     return scaleVector(multVector(objDiffuse, lightColor), NL);
   }
   return getVector(0,0,0);
 }
 
+//compute the specular light
 double* specular(double* objSpecular, double* lightColor, double* R, double* V,  double* N, double* L, double shininess){
   double RV = dotProduct(R, V);
   double NL = dotProduct(N, L);
@@ -178,10 +172,10 @@ int main(int argc, char *argv[]){
 
   for(y = 0; y < height ; y++){
     for(x = 0; x < width ; x++){
-      double* Ro = getVector(0, 0, 0);
+      double* Ro = getVector(0, 0, 0); //Origin of camera
       double Rx = centerX - (camWidth/2) + pixWidth * (x+0.5);
       double Ry = centerY - (camHeight/2) + pixHeight * (y+0.5);
-      double* Rd = getVector(Rx, Ry, 1);
+      double* Rd = getVector(Rx, Ry, 1); //vector from camera to pixel
 
       normalize(Rd);
 
@@ -204,7 +198,7 @@ int main(int argc, char *argv[]){
           exit(ERROR_RAYCAST);
         }
 
-        if(t > 0 && t < bestT){
+        if(t > 0 && t < bestT){ //Select the closest object
           bestT = t;
           closestObject = tempList;
         }
@@ -214,27 +208,24 @@ int main(int argc, char *argv[]){
       double* color = getVector(0,0,0);
       lightList tempLights = lights;
 
-      if(closestObject != NULL){
-        while(tempLights != NULL){
-          double* Ron = addVector(scaleVector(Rd, bestT), Ro);
-          double* Rdn = subVector(tempLights->position, Ron);
+      if(closestObject != NULL){ //If object detected
+        while(tempLights != NULL){ //For all lights
+          double* Ron = addVector(scaleVector(Rd, bestT), Ro); //Position of interserction point
+          double* Rdn = subVector(tempLights->position, Ron); //Vector from point to light
           normalize(Rdn);
-
-          //printf("%lf  %lf %lf\n", Ron[0], Ron[1], Ron[2]);
-          //printf("%lf  %lf %lf\n\n", Rdn[0], Rdn[1], Rdn[2]);
 
           double* Vo = subVector(Ron, tempLights->position);
           normalize(Vo);
           double* Vl = subVector(Ron,tempLights->position);
           double dist = sqrt(sqr(Vl[0]) + sqr(Vl[1]) + sqr(Vl[2]));
-          //printf("%lf\n", dist);
 
           tempList = list;
           t = 0;
           int shadow = 0;
 
-          while(tempList != NULL){
-            if(tempList != closestObject){
+          //Shadow detection
+          while(tempList != NULL){ //For all objects
+            if(tempList != closestObject){ //
               switch (tempList->kind) {
                 case 0:
                 t = sphereIntersection(Ron, Rdn, tempList->position, tempList->sphere.radius);
@@ -246,15 +237,14 @@ int main(int argc, char *argv[]){
                 fprintf(stderr, "Error: Object of kind unknow (How is it even possible ?)");
                 exit(ERROR_RAYCAST);
               }
-              if(t > 0 && t < dist){
+              if(t > 0 && t < dist){ //If distance of interserction < distance to light then shadow detected from this light
                 shadow = 1;
                 break;
               }
             }
             tempList = tempList->next;
           }
-          printf(" t = %lf dist = %lf\n", t, dist);
-          if( !shadow){
+          if(!shadow){
             double* N = NULL;
             double* L = NULL;
             double* R = NULL;
@@ -280,8 +270,6 @@ int main(int argc, char *argv[]){
             double angAtt = fAng(Vo, tempLights->direction, tempLights->theta, tempLights->angA0);
             double radAtt = fRad(dist, tempLights->radA0, tempLights->radA1, tempLights->radA2);
 
-            //printf("%lf  %lf %lf\n", specularColor[0], specularColor[1], specularColor[2]);
-
             color[0] += angAtt * radAtt * (diffuseColor[0] + specularColor[0]);
             color[1] += angAtt * radAtt * (diffuseColor[1] + specularColor[1]);
             color[2] += angAtt * radAtt * (diffuseColor[2] + specularColor[2]);
@@ -294,16 +282,8 @@ int main(int argc, char *argv[]){
       data[ 3 * (x + width * (height - 1 - y)) + 2] = clamp(color[2]) * 255;
     }
   }
-/*
-  int i,j;
-  for(i = 0 ; i < height ; i++){
-    for(j = 0 ; j < width ; j++){
-      printf("%d ", data[i*j*3]);
-    }
-    printf("\n");
-  }*/
 
-  createScene(argv[4], data, width, height);
+  createScene(argv[4], data, width, height); //Write the image
   free(data);
 
   return 0;
