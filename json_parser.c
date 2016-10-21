@@ -186,20 +186,22 @@ components parseFile(char* filename, double* width, double* height) {
       }
       else if (strcmp(value, "sphere") == 0) {
         currentKind = 0 ;
+        printf("WTF2\n" );
         if(tempList == NULL){
           tempList = createObject();
-          tempList->kind = 0;
         }
+        tempList->kind = 0;
         if(previousObject != NULL){
           previousObject->next = tempList;
         }
       }
       else if (strcmp(value, "plane") == 0) {
         currentKind = 1 ;
+        printf("WTF\n" );
         if(tempList == NULL){
           tempList = createObject();
-          tempList->kind = 1;
         }
+        tempList->kind = 1;
         if(previousObject != NULL){
           previousObject->next = tempList;
         }

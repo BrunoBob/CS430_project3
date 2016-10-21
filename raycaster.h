@@ -49,7 +49,7 @@ double sphereIntersection(double* Ro, double* Rd, double* position, double radiu
 
 double fAng(double* Vo, double* Vl, double angleMax, double a0);
 
-double fRad(double* posObject, double* posLight, double a0, double a1, double a2);
+double fRad(double dist, double a0, double a1, double a2);
 
 double* diffuse(double* objDiffuse, double* lightColor, double* N, double* L);
 
@@ -64,31 +64,19 @@ static inline double* getVector(double x, double y, double z){
 }
 
 static inline double* subVector(double* a, double* b){
-  a[0] = a[0] - b[0];
-  a[1] = a[1] - b[1];
-  a[2] = a[2] - b[2];
-  return a;
+  return getVector(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 }
 
 static inline double* addVector(double* a, double* b){
-  a[0] = a[0] + b[0];
-  a[1] = a[1] + b[1];
-  a[2] = a[2] + b[2];
-  return a;
+  return getVector(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
 }
 
 static inline double* multVector(double* a, double* b){
-  a[0] = a[0] * b[0];
-  a[1] = a[1] * b[1];
-  a[2] = a[2] * b[2];
-  return a;
+  return getVector(a[0] * b[0], a[1] * b[1], a[2] * b[2]);
 }
 
 static inline double* scaleVector(double* a, double b){
-  a[0] = a[0] * b;
-  a[1] = a[1] * b;
-  a[2] = a[2] * b;
-  return a;
+  return getVector(a[0] * b, a[1] * b, a[2] * b);
 }
 
 static inline double dotProduct(double* a, double* b){
